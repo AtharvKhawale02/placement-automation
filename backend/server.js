@@ -21,6 +21,8 @@ app.get("/", (req, res) => {
   res.send("Server is running");
 });
 
+// Connect MongoDB
+connectDB();
 
 
 // Start server

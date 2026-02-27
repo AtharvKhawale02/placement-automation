@@ -1,44 +1,81 @@
+const User = require("../models/User");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const User = require("../models/User");
 
+// REGISTER
 exports.registerUser = async (req, res) => {
-  const { name, email, password, role } = req.body;
+  try {
+    const { name, email, password, role } = req.body;
 
-  const hashedPassword = await bcrypt.hash(password, 10);
+    console.log("Registration attempt:", { name, email, role, passwordLength: password?.length });
 
-  const user = new User({
-    name,
-    email,
-    password: hashedPassword,
-    role
-  });
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return res.status(400).json({ message: "User already exists" });
+    }
 
-  await user.save();
+    const hashedPassword = await bcrypt.hash(password, 10);
+    console.log("Password hashed successfully");
 
-  res.json({ message: "User registered successfully" });
+    const user = new User({
+      name,
+      email,
+      password: hashedPassword,
+      role,
+    });
+
+    await user.save();
+    console.log("User registered successfully:", email);
+
+    res.status(201).json({
+      message: "User registered successfully",
+    });
+  } catch (error) {
+    console.error("Registration Error:", error);
+    res.status(500).json({ message: "Registration failed" });
+  }
 };
 
+// LOGIN
 exports.loginUser = async (req, res) => {
-  const { email, password } = req.body;
+  try {
+    const { email, password } = req.body;
 
-  const user = await User.findOne({ email });
+    console.log("Login attempt for:", email);
 
-  if (!user) {
-    return res.status(400).json({ message: "User not found" });
+    const user = await User.findOne({ email });
+    if (!user) {
+      console.log("User not found:", email);
+      return res.status(400).json({ message: "Invalid credentials" });
+    }
+
+    console.log("User found:", user.email);
+    console.log("Comparing passwords...");
+    const isMatch = await bcrypt.compare(password, user.password);
+    console.log("Password match:", isMatch);
+    
+    if (!isMatch) {
+      console.log("Password does not match");
+      return res.status(400).json({ message: "Invalid credentials" });
+    }
+
+    const token = jwt.sign(
+      { id: user._id, role: user.role },
+      process.env.JWT_SECRET,
+      { expiresIn: "1d" }
+    );
+
+    res.json({
+      token,
+      user: {
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+      },
+    });
+  } catch (error) {
+    console.error("Login Error:", error);
+    res.status(500).json({ message: "Login failed" });
   }
-
-  const isMatch = await bcrypt.compare(password, user.password);
-
-  if (!isMatch) {
-    return res.status(400).json({ message: "Invalid credentials" });
-  }
-
-  const token = jwt.sign(
-    { id: user._id, role: user.role },
-    process.env.JWT_SECRET,
-    { expiresIn: "1d" }
-  );
-
-  res.json({ token, user });
 };

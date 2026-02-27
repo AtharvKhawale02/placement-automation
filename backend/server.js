@@ -8,6 +8,8 @@ const app = express();
 const authRoutes = require("./routes/authRoutes");
 const driveRoutes = require("./routes/driveRoutes");
 const applicationRoutes = require("./routes/applicationRoutes");
+const adminRoutes = require("./routes/adminRoutes");
+const userRoutes = require("./routes/userRoutes");
 
 // Middleware
 app.use(cors());
@@ -15,6 +17,8 @@ app.use(express.json());
 app.use("/api/auth", authRoutes);
 app.use("/api/drives", driveRoutes);
 app.use("/api/applications", applicationRoutes);
+app.use("/api/admin", adminRoutes);
+app.use("/api/users", userRoutes);
 
 // Test route
 app.get("/", (req, res) => {

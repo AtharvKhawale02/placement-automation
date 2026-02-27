@@ -5,7 +5,7 @@ const jwt = require("jsonwebtoken");
 // REGISTER
 exports.registerUser = async (req, res) => {
   try {
-    const { name, email, password, role } = req.body;
+    const { name, email, password, role, cgpa, branch, skills, tenthPercentage, twelfthPercentage, diploma } = req.body;
 
     console.log("Registration attempt:", { name, email, role, passwordLength: password?.length });
 
@@ -22,6 +22,12 @@ exports.registerUser = async (req, res) => {
       email,
       password: hashedPassword,
       role,
+      cgpa: cgpa || 0,
+      branch: branch || "",
+      skills: skills || [],
+      tenthPercentage: tenthPercentage || 0,
+      twelfthPercentage: twelfthPercentage || 0,
+      diploma: diploma || "",
     });
 
     await user.save();
@@ -72,6 +78,13 @@ exports.loginUser = async (req, res) => {
         name: user.name,
         email: user.email,
         role: user.role,
+        cgpa: user.cgpa,
+        branch: user.branch,
+        skills: user.skills,
+        tenthPercentage: user.tenthPercentage,
+        twelfthPercentage: user.twelfthPercentage,
+        diploma: user.diploma,
+        resume: user.resume,
       },
     });
   } catch (error) {

@@ -6,6 +6,14 @@ const driveSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    jobDescription: {
+      type: String,
+      default: "",
+    },
+    role: {
+      type: String,
+      default: "",
+    },
     requiredSkills: {
       type: [String],
       required: true,
@@ -13,6 +21,22 @@ const driveSchema = new mongoose.Schema(
     minCGPA: {
       type: Number,
       required: true,
+    },
+    eligibleBranches: {
+      type: [String],
+      default: [],
+    },
+    minTenthPercentage: {
+      type: Number,
+      default: 0,
+    },
+    minTwelfthPercentage: {
+      type: Number,
+      default: 0,
+    },
+    diplomaRequired: {
+      type: Boolean,
+      default: false,
     },
     package: {
       type: Number,

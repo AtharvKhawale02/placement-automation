@@ -1,5 +1,5 @@
 import { useState } from "react";
-import axios from "axios";
+import API from "../services/api";
 import { useNavigate, Link } from "react-router-dom";
 
 function Register() {
@@ -10,6 +10,12 @@ function Register() {
     email: "",
     password: "",
     role: "student",
+    cgpa: "",
+    branch: "",
+    skills: "",
+    tenthPercentage: "",
+    twelfthPercentage: "",
+    diploma: "",
   });
 
   const [loading, setLoading] = useState(false);
@@ -46,9 +52,22 @@ function Register() {
     setLoading(true);
 
     try {
-      await axios.post(
-        "http://localhost:5000/api/auth/register",
-        formData
+      const submitData = { ...formData };
+      
+      // For students, convert skills string to array and parse numbers
+      if (formData.role === "student") {
+        submitData.skills = formData.skills
+          .split(",")
+          .map((skill) => skill.trim())
+          .filter((skill) => skill);
+        submitData.cgpa = parseFloat(formData.cgpa) || 0;
+        submitData.tenthPercentage = parseFloat(formData.tenthPercentage) || 0;
+        submitData.twelfthPercentage = parseFloat(formData.twelfthPercentage) || 0;
+      }
+
+      await API.post(
+        "/api/auth/register",
+        submitData
       );
 
       alert("Registration successful! Please login.");
@@ -200,6 +219,134 @@ function Register() {
               ))}
             </div>
           </div>
+
+          {/* Additional Fields for Students */}
+          {formData.role === "student" && (
+            <div className="mb-6 p-6 bg-primary-50 rounded-lg border-2 border-primary-200 animate-fade-in">
+              <h3 className="text-lg font-bold text-secondary-900 mb-4 flex items-center">
+                <svg className="w-5 h-5 text-primary-600 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z" />
+                </svg>
+                Student Academic Details (Required)
+              </h3>
+              
+              <div className="grid md:grid-cols-2 gap-4 mb-4">
+                {/* CGPA */}
+                <div>
+                  <label className="block text-sm font-semibold text-secondary-700 mb-2">
+                    CGPA <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    name="cgpa"
+                    type="number"
+                    step="0.01"
+                    min="0"
+                    max="10"
+                    placeholder="e.g., 8.5"
+                    value={formData.cgpa}
+                    onChange={handleChange}
+                    required
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-200 transition-all"
+                  />
+                </div>
+
+                {/* Branch */}
+                <div>
+                  <label className="block text-sm font-semibold text-secondary-700 mb-2">
+                    Branch <span className="text-red-500">*</span>
+                  </label>
+                  <select
+                    name="branch"
+                    value={formData.branch}
+                    onChange={handleChange}
+                    required
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-200 transition-all"
+                  >
+                    <option value="">Select Branch</option>
+                    <option value="Computer Science">Computer Science</option>
+                    <option value="Information Technology">Information Technology</option>
+                    <option value="Electronics">Electronics</option>
+                    <option value="Electrical">Electrical</option>
+                    <option value="Mechanical">Mechanical</option>
+                    <option value="Civil">Civil</option>
+                    <option value="Chemical">Chemical</option>
+                    <option value="Aerospace">Aerospace</option>
+                    <option value="Other">Other</option>
+                  </select>
+                </div>
+
+                {/* 10th Percentage */}
+                <div>
+                  <label className="block text-sm font-semibold text-secondary-700 mb-2">
+                    10th Percentage <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    name="tenthPercentage"
+                    type="number"
+                    step="0.01"
+                    min="0"
+                    max="100"
+                    placeholder="e.g., 85.5"
+                    value={formData.tenthPercentage}
+                    onChange={handleChange}
+                    required
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-200 transition-all"
+                  />
+                </div>
+
+                {/* 12th Percentage */}
+                <div>
+                  <label className="block text-sm font-semibold text-secondary-700 mb-2">
+                    12th Percentage <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    name="twelfthPercentage"
+                    type="number"
+                    step="0.01"
+                    min="0"
+                    max="100"
+                    placeholder="e.g., 88.0"
+                    value={formData.twelfthPercentage}
+                    onChange={handleChange}
+                    required
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-200 transition-all"
+                  />
+                </div>
+              </div>
+
+              {/* Skills */}
+              <div className="mb-4">
+                <label className="block text-sm font-semibold text-secondary-700 mb-2">
+                  Skills <span className="text-red-500">*</span>
+                </label>
+                <textarea
+                  name="skills"
+                  rows="3"
+                  placeholder="e.g., Java, Python, React, SQL (comma-separated)"
+                  value={formData.skills}
+                  onChange={handleChange}
+                  required
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-200 transition-all"
+                />
+                <p className="text-xs text-secondary-500 mt-1">Enter your skills separated by commas</p>
+              </div>
+
+              {/* Diploma (Optional) */}
+              <div>
+                <label className="block text-sm font-semibold text-secondary-700 mb-2">
+                  Diploma <span className="text-secondary-500">(Optional)</span>
+                </label>
+                <input
+                  name="diploma"
+                  type="text"
+                  placeholder="e.g., Diploma in Computer Engineering"
+                  value={formData.diploma}
+                  onChange={handleChange}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-200 transition-all"
+                />
+              </div>
+            </div>
+          )}
 
           {/* Register Button */}
           <button

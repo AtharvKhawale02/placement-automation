@@ -55,10 +55,73 @@ const userSchema = new mongoose.Schema({
     default: "",
   },
 
+  // Backlog Information
+  activeBacklogs: {
+    type: Number,
+    default: 0,
+  },
+
+  totalBacklogs: {
+    type: Number,
+    default: 0,
+  },
+
+  // Year and Batch
+  currentYear: {
+    type: Number,
+    default: 1,
+  },
+
+  batchYear: {
+    type: Number,
+    default: new Date().getFullYear(),
+  },
+
+  // Internship Experience
+  internships: [{
+    company: String,
+    role: String,
+    duration: Number, // in months
+    description: String,
+  }],
+
   // Resume
   resume: {
     type: String,
     default: "",
+  },
+
+  // Placement Status
+  placementStatus: {
+    type: String,
+    enum: ["unplaced", "placed", "dream_placed"],
+    default: "unplaced",
+  },
+
+  // Offers Received
+  offers: [{
+    drive: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Drive",
+    },
+    companyName: String,
+    package: Number,
+    offerType: {
+      type: String,
+      enum: ["dream", "non-dream"],
+    },
+    acceptedAt: Date,
+  }],
+
+  // Company-specific fields
+  companyDetails: {
+    companyName: String,
+    registrationNumber: String,
+    website: String,
+    verified: {
+      type: Boolean,
+      default: false,
+    },
   },
 });
 

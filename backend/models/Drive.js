@@ -6,6 +6,10 @@ const driveSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    companyEmail: {
+      type: String,
+      default: "",
+    },
     jobDescription: {
       type: String,
       default: "",
@@ -47,7 +51,62 @@ const driveSchema = new mongoose.Schema(
       required: true,
     },
 
-    // 🔥 IMPORTANT: Ownership
+    // Backlog Policy
+    backlogsAllowed: {
+      type: Boolean,
+      default: false,
+    },
+
+    maxBacklogsAllowed: {
+      type: Number,
+      default: 0,
+    },
+
+    // Year Eligibility
+    eligibleYears: {
+      type: [Number],
+      default: [3, 4], // Default: 3rd and 4th year
+    },
+
+    // Weightage Configuration for Ranking
+    weightage: {
+      cgpa: {
+        type: Number,
+        default: 40, // 40%
+      },
+      skills: {
+        type: Number,
+        default: 35, // 35%
+      },
+      internships: {
+        type: Number,
+        default: 15, // 15%
+      },
+      academics: {
+        type: Number,
+        default: 10, // 10% (10th & 12th)
+      },
+    },
+
+    // Drive Status
+    status: {
+      type: String,
+      enum: ["open", "closed", "shortlisting", "completed"],
+      default: "open",
+    },
+
+    // Dream Offer Classification
+    isDreamOffer: {
+      type: Boolean,
+      default: false, // Dream if package >= threshold (e.g., 10 LPA)
+    },
+
+    dreamThreshold: {
+      type: Number,
+      default: 1000000, // 10 LPA in rupees
+    },
+
+    //  IMPORTANT: Ownership
     createdBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",

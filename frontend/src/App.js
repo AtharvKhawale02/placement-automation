@@ -4,6 +4,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Landing from "./pages/Landing";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+import ProfileEdit from "./pages/ProfileEdit";
 
 // Dashboards
 import StudentDashboard from "./pages/dashboards/StudentDashboard";
@@ -28,6 +29,16 @@ function App() {
           element={
             <ProtectedRoute allowedRoles={["student"]}>
               <StudentDashboard />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* Student Profile Edit */}
+        <Route
+          path="/profile/edit"
+          element={
+            <ProtectedRoute allowedRoles={["student"]}>
+              <ProfileEdit />
             </ProtectedRoute>
           }
         />

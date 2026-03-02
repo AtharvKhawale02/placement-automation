@@ -1,5 +1,5 @@
 import { useState } from "react";
-import axios from "axios";
+import API from "../services/api";
 import { useNavigate, Link } from "react-router-dom";
 
 function Login() {
@@ -7,6 +7,7 @@ function Login() {
   const [formData, setFormData] = useState({
     email: "",
     password: "",
+    role: "student", // default role
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -24,8 +25,8 @@ function Login() {
     setLoading(true);
 
     try {
-      const res = await axios.post(
-        "http://localhost:5000/api/auth/login",
+      const res = await API.post(
+        "/api/auth/login",
         formData
       );
 
@@ -81,6 +82,31 @@ function Login() {
               </p>
             </div>
           )}
+
+          {/* Role Selection Dropdown */}
+          <div className="mb-5">
+            <label className="block text-sm font-semibold text-secondary-700 mb-2">
+              Login As
+            </label>
+            <div className="relative">
+              <select
+                name="role"
+                value={formData.role}
+                onChange={handleChange}
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-200 transition-all appearance-none bg-white cursor-pointer"
+                required
+              >
+                <option value="student">Student</option>
+                <option value="admin">Placement Cell (Admin)</option>
+                <option value="company">Company</option>
+              </select>
+              <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-gray-700">
+                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
+                </svg>
+              </div>
+            </div>
+          </div>
 
           {/* Email Input */}
           <div className="mb-5">
